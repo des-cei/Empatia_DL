@@ -25,3 +25,15 @@ WESAD
 3.Data_normalization.py is just similar to WEMAC. The output is a .log file.
 4.Creat_feature_maps_wesad.py could generate 2D feature maps using in training process.
 5.Then we can start the series of training process. We have general training, LOSO training and RFE training for 3 classes and 2 classes, respectively.
+
+**PLEASE CITE:**
+@ARTICLE{10506582,
+  author={Sun, Junjiao and Portilla, Jorge and Otero, Andres},
+  journal={IEEE Journal of Biomedical and Health Informatics}, 
+  title={A Deep Learning Approach for Fear Recognition on the Edge based on Two-dimensional Feature Maps}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-12},
+  keywords={Feature extraction;Biomedical monitoring;Emotion recognition;Physiology;Anxiety disorders;Biomarkers;Real-time systems;Affective computing;Fear recognition;Deep learning;Feature selection;Physiological signals;Edge Computing},
+  doi={10.1109/JBHI.2024.3392373}}
