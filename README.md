@@ -1,6 +1,8 @@
 # Empatia_DL
 This project is for the Python code for Empatia with DL methods. Using WEMAC and WESAD data base.
 
+The paper related to this project has been published in _DOI: 10.1109/JBHI.2024.3392373_
+
 Readme for Empatia deep learning
 
 **Please, pay attention to all of the file locations in the project. Change them to yours. That is the most impotant thing.**
