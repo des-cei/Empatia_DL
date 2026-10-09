@@ -74,10 +74,6 @@ python -m pip install numpy scipy pandas scikit-learn matplotlib seaborn \
     mat73 biosppy neurokit2 distfit xlrd xlwt skfeature-chappers
 ```
 
-This is an import-derived package list, not a tested, version-locked environment. `Transfer_label.py` uses legacy `.xls` writing, which requires a compatible pandas writer or adaptation to another format. The Fisher helper expects a `skfeature` implementation supporting `mode='rank'`.
-
-The training loops explicitly cast inputs to `torch.cuda.FloatTensor`, so the current scripts require CUDA despite containing a CPU device-selection branch. CPU execution requires replacing these casts with device-aware conversions such as `inputs.to(device=device, dtype=torch.float32)`.
-
 ## Preparation required before running
 
 Clone the repository and expose its local modules in a Bash terminal:
@@ -191,42 +187,6 @@ The checked-in `AllFromOne` generator uses blocks of 60 **feature frames**, adva
 | Two classes | `General_WESAD_F1_2class.py` | `LOSO_WESAD_F1_2class.py` | `train_rfe_wesad_fisher_2C.py` |
 
 Run the chosen script from `WESAD/Training/`. The LOSO scripts call `LOSO_resplit` to hold out a subject. The alternative `LOSO_resplit_new` helper retains all samples in training and must not be used for subject-independent evaluation.
-
-## Training settings and outputs
-
-| Setting | Configuration location |
-| --- | --- |
-| CNN architecture | `model_group` in the main block. |
-| Augmentation | `strategy_list` or `strategy`. |
-| Repetitions | `K` in the experiment loop. |
-| Epochs | Epoch loop inside the training function. |
-| Batch size | `DataLoader` construction, generally 32. |
-| Learning rate | `--lr`, default `0.1`. |
-| RFE stopping point | `min_feature_num`; check whether metadata rows are counted. |
-
-Current training functions use cross-entropy loss, SGD with momentum `0.9` and weight decay `5e-4`, and cosine learning-rate scheduling. These repository defaults differ from the general training settings described in the thesis.
-
-For an initial run, reduce the main block to one architecture, `AllFromOne`, and one repetition. The default loops can launch many experiments.
-
-Scripts print loss, accuracy, weighted F1-score, and aggregate statistics. Accuracy and F1 are printed as percentages. Console output can be retained with:
-
-```bash
-python General_F1.py --lr 0.1 > training.log 2>&1
-```
-
-Substitute the appropriate script for WESAD. Checkpoint saving is commented out in the main workflows; a completed run does not automatically produce a reusable model file. The `--resume` option does not establish a complete save/resume workflow.
-
-## Evaluation and reproducibility
-
-The public scripts preserve development-time experiment logic. Before reporting independent benchmark results, account for these implementation details:
-
-- **Splits and initialization:** General scripts repeat random participant splits, not conventional fixed K-fold partitions. Several loops reuse instantiated models across repetitions, strategies, or subjects. Use a fresh model for every independent run and record random seeds and subject assignments.
-- **Normalization and feature selection:** Normalization occurs before LOSO re-splitting, and normalization search selects configurations using the split's prediction error. RFE ranks features using concatenated partitions and uses evaluation performance for removal decisions. For unbiased testing, perform all selection within training subjects and an inner validation split, leaving the final test subject untouched.
-- **Augmentation:** Training functions apply the selected strategy to both partitions. To evaluate on original samples, explicitly use `AllFromOne` for the held-out partition.
-- **Epoch selection:** Best accuracy and best F1 are selected across evaluation epochs and may come from different epochs. For final testing, select a checkpoint on validation data and evaluate once on the held-out set.
-- **Incomplete recordings:** Some augmentation branches assume enough frames exist for every requested participant/class or video. Missing groups and short recordings need explicit checks before indexing or random sampling.
-
-Default execution alone therefore does not establish reproduction of the thesis's final evaluation protocol or scores. Refer to the associated paper for its experimental results and record the exact configuration of any new run. The repository contains CNN experimentation code, but no end-to-end Coral Edge TPU conversion and deployment pipeline.
 
 ## Citation
 
